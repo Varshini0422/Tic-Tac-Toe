@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>✨ Stylish Tic-Tac-Toe (XOX) Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 20px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .game-container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgb(0 0 0 / 0.15);
+    max-width: 360px;
+    width: 100%;
+    flex-grow: 1;
+    text-align: center;
+  }
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 2.4rem;
+    color: #222;
+    letter-spacing: 2px;
+  }
+
+  #status {
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 1.25rem;
+    min-height: 1.8em;
+    color: #444;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 12px;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    max-width: 340px;
+    margin: 0 auto 25px;
+  }
+
+  .cell {
+    background: #fefefe;
+    border-radius: 15px;
+    box-shadow:
+      inset 0 3px 5px rgb(255 255 255 / 0.9),
+      0 4px 8px rgb(0 0 0 / 0.08);
+    font-size: 3rem;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition:
+      background-color 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.2s ease;
+    aspect-ratio: 1 / 1;
+  }
+
+  .cell:hover:not(.disabled) {
+    background: #e2f0ff;
+    box-shadow:
+      inset 0 4px 6px rgb(255 255 255 / 1),
+      0 6px 12px rgb(0 123 255 / 0.25);
+    transform: scale(1.1);
+  }
+
+  .cell.disabled {
+    cursor: default;
+    color: #aaa;
+    box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.05);
+  }
+
+  /* Color X and O distinctly */
+  .cell.x {
+    color: #0051ba; /* Strong blue */
+    text-shadow: 0 0 6px #3b82f6;
+  }
+  .cell.o {
+    color: #c53030; /* Deep red */
+    text-shadow: 0 0 6px #f56565;
+  }
+
+  button {
+    padding: 14px 30px;
+    font-size: 1.15rem;
+    cursor: pointer;
+    width: 100%;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #4f8ef7 0%, #2f6cd9 100%);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgb(47 108 217 / 0.45);
+    transition: background 0.4s ease, box-shadow 0.3s ease;
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, #2f6cd9 0%, #4f8ef7 100%);
+    box-shadow: 0 10px 30px rgb(47 108 217 / 0.6);
+  }
+
+  /* Sidebar styles */
+  .sidebar {
+    background: rgba(255 255 255 / 0.95);
+    padding: 30px 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgb(0 0 0 / 0.12);
+    max-width: 350px;
+    width: 100%;
+    flex-grow: 1;
+    color: #2c3e50;
+    user-select: none;
+  }
+
+  .sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1.5px;
+    color: #34495e;
+  }
+
+  .rules-list {
+    list-style: decimal inside;
+    padding-left: 0;
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+
+  .rules-list li {
+    margin-bottom: 15px;
+  }
+
+  /* Responsive layout */
+  @media (max-width: 900px) {
+    body {
+      justify-content: center;
+      padding: 30px 15px;
+    }
+    .game-container,
+    .sidebar {
+      max-width: 90vw;
+      flex-grow: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cell {
+      font-size: 2.4rem;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 12px 20px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .sidebar h2 {
+      font-size: 1.6rem;
+    }
+
+    .rules-list li {
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Tic-Tac-Toe (XOX)</h1>
+    <div id="status">Player X's turn</div>
+    <div class="board" id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+    <button id="resetBtn">Reset Game</button>
+  </div>
+
+  <aside class="sidebar">
+    <h2>Game Rules</h2>
+    <ol class="rules-list">
+      <li>The game is played on a 3x3 grid.</li>
+      <li>Player X goes first, then players alternate turns.</li>
+      <li>On your turn, click an empty cell to place your mark (X or O).</li>
+      <li>The goal is to get three of your marks in a row — horizontally, vertically, or diagonally.</li>
+      <li>If all cells are filled without a winner, the game ends in a draw.</li>
+      <li>Click "Reset Game" to start a new match at any time.</li>
+    </ol>
+  </aside>
+
+<script>
+  const board = document.getElementById('board');
+  const status = document.getElementById('status');
+  const resetBtn = document.getElementById('resetBtn');
+  const cells = board.querySelectorAll('.cell');
+
+  let currentPlayer = 'X';
+  let gameActive = true;
+  let boardState = Array(9).fill(null);
+
+  const winningConditions = [
+    [0,1,2], [3,4,5], [6,7,8],  // rows
+    [0,3,6], [1,4,7], [2,5,8],  // columns
+    [0,4,8], [2,4,6]            // diagonals
+  ];
+
+  function handleCellClick(e) {
+    const index = e.target.getAttribute('data-index');
+
+    if (!gameActive || boardState[index] !== null) {
+      return; // Ignore if game over or cell occupied
+    }
+
+    updateCell(e.target, index);
+    checkResult();
+  }
+
+  function updateCell(cell, index) {
+    boardState[index] = currentPlayer;
+    cell.textContent = currentPlayer;
+    cell.classList.add('disabled');
+    cell.classList.add(currentPlayer.toLowerCase());
+  }
+
+  function checkResult() {
+    let roundWon = false;
+
+    for (const condition of winningConditions) {
+      const [a, b, c] = condition;
+      if (
+        boardState[a] &&
+        boardState[a] === boardState[b] &&
+        boardState[a] === boardState[c]
+      ) {
+        roundWon = true;
+        break;
+      }
+    }
+
+    if (roundWon) {
+      status.textContent = `Player ${currentPlayer} wins! 🎉`;
+      gameActive = false;
+      return;
+    }
+
+    if (!boardState.includes(null)) {
+      status.textContent = `It's a draw! 🤝`;
+      gameActive = false;
+      return;
+    }
+
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    status.textContent = `Player ${currentPlayer}'s turn`;
+  }
+
+  function resetGame() {
+    currentPlayer = 'X';
+    gameActive = true;
+    boardState.fill(null);
+    status.textContent = `Player ${currentPlayer}'s turn`;
+    cells.forEach(cell => {
+      cell.textContent = '';
+      cell.classList.remove('disabled', 'x', 'o');
+    });
+  }
+
+  cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+  resetBtn.addEventListener('click', resetGame);
+</script>
+</body>
+</html>
